@@ -1,0 +1,46 @@
+<div class="row">
+  <div class="col-lg-4 left">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">Legal Documents</li>
+      </ol>
+    </nav>
+  </div>
+  <div class="col-lg-8 right">
+    <nav class="nav justify-content-end align-items-center ">
+      <i class=" pi pi-bell" pBadge [value]=" uiNotifLen" severity="info" (click)="op.show($event)"></i>
+      <a class="nav-link clock">
+        <span class="date">{{ time | date: "dd MMM, yyyy" }}</span>
+        <span class="time">{{ time | date: "hh:mm:ss a" }}</span>
+      </a>
+      <a class="nav-link dp btn-group dropdown">
+        <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+          aria-expanded="false">
+          <i class="fa fa-user" style="padding-right: 5px"></i>
+          {{ User_legal.firstname }}
+          {{ User_legal.lastname }}
+        </button>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" (click)="logout()"><i class="fa fa-sign-out"></i> Sign Out</a>
+        </div>
+      </a>
+    </nav>
+  </div>
+</div>
+<p-overlayPanel #op [dismissable]="true" [showCloseIcon]="true" styleClass="notifOverlay">
+  <ng-template pTemplate>
+
+    <h5 style="margin: 0.6rem;" *ngIf="notifc.length === 0">
+      No new notifications
+    </h5>
+    <p-messages *ngFor="let noti of notifc" severity="info">
+      <ng-template pTemplate>
+        <div class="p-ml-2">{{noti.message}}
+        </div>
+        <i style="margin-left: auto; cursor: pointer;  "
+          *ngIf="User_legal.role === 'initiator' ? !noti.initiator_read: !noti.cs_member_read"
+          (click)="readNotif(noti.id)" class="pi pi-check"> </i>
+      </ng-template>
+    </p-messages>
+  </ng-template>
+</p-overlayPanel>

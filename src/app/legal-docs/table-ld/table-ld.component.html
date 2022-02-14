@@ -1,0 +1,51 @@
+<div class="card table-card">
+    <h4 class="text-center m-2 mt-3  "> Communication Logs </h4>
+    <p-table [value]="remarkLogs" [scrollable]="true" scrollHeight="500px">
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width:120px ">Sr No</th>
+                <th style="min-width:200px">Name</th>
+                <th style="min-width:200px">State</th>
+                <th style="min-width:200px">Remark</th>
+                <th style="min-width:200px">Updated at</th>
+                <th style="min-width:200px">Documents</th>
+
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-remark let-i="rowIndex">
+            <tr>
+                <td style="width:120px ">{{i+1}}</td>
+                <td style="min-width:200px">{{remark.remark_by}}</td>
+                <td class="font-size-small" style="min-width:200px">{{getStatus(remark.state)}}</td>
+                <td class="font-weight-bold" style="min-width:450px ">{{remark.remark}}</td>
+                <td>{{remark.updated_at | date: "dd/MM/yyyy hh:mm a" }}</td>
+                <td>
+                    <div class="btn btn-submit" (click)="show(i)">Open</div>
+                </td>
+
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<p-dialog header="Attachments" [(visible)]="showModal" [style]="{width: '50vw'}">
+    <div class="files-container">
+        <div class='file-box' *ngFor="let file of filesToShow" (click)='onOpen(file)'>
+            <i [ngClass]="getFileData(file).icon" style="color:#ff8800;" aria-hidden="true"></i>
+            <span class="badge badge-pill badge-primary filename ">{{getFileData(file).name.substring(0,15)}}
+            </span>
+        </div>
+    </div>
+    <!-- <button style="height: 40px" (click)="onOpen('legaldocs_dept')" class="btn btn-submit">Open doc
+    </button> -->
+</p-dialog>
+<!-- {
+    "id": 101,
+    "remark_by": "Rohan",
+    "status": 4,
+    "state": 4,
+    "role": "hod1",
+    "remark": "This is a reconsideration test.",
+    "created_at": "2021-09-16T09:39:41.827798Z",
+    "userable_id": 69,
+    "updated_at": "2021-09-16T09:39:41.827798Z"
+} -->

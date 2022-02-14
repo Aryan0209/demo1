@@ -1,0 +1,154 @@
+<div class="page page_login">
+  <div class="container_form">
+    <div class="logo_wrap">
+      <img src="assets/images/logo.png" alt="" />
+    </div>
+    <div class="header_wrap">
+      <h1>Registration Form</h1>
+      <p>
+        Please enter your credentials. All <span>* </span>fields compulsory.
+      </p>
+    </div>
+    <div class="form_wrap">
+      <form (ngSubmit)="onSubmit($event)" class="ui form" [formGroup]="RegistrationForm" [class.was-validated]="
+          RegistrationForm.invalid && RegistrationForm.touched
+        ">
+        <div class="two fields">
+          <div class="field">
+            <label>First Name *</label>
+            <input type="text" name="firstname" placeholder="First Name" formControlName="firstname" [class.is-invalid]="
+                (fControl.firstname.touched || fControl.firstname.dirty) &&
+                fControl.firstname.errors
+              " />
+            <span class="invalid-feedback" *ngIf="fControl.firstname.errors && fControl.firstname.touched">
+              Invalid first name.
+            </span>
+          </div>
+          <div class="field">
+            <label>Last Name *</label>
+            <input formControlName="lastname" required type="text" name="lastname" placeholder="Last Name"
+              [class.is-invalid]="
+                (fControl.lastname.touched || fControl.lastname.dirty) &&
+                fControl.lastname.errors
+              " />
+            <span class="invalid-feedback" *ngIf="fControl.lastname.errors && fControl.lastname.touched">
+              Invalid last Name.
+            </span>
+          </div>
+        </div>
+        <div class="field right ui labeled input">
+          <input formControlName="email" style="width: 400px !important;" required type="text" name="email"
+            placeholder="Email : lowercase only" class="form-control einput" [class.is-invalid]="
+          (fControl.email.touched || fControl.email.dirty) &&
+          fControl.email.errors
+          " />
+          <div class="ui basic label " style="color: #ca464a; width: 148px; ">
+            @solargroup.com
+          </div>
+          <br *ngIf="fControl.email.errors && fControl.email.touched">
+        </div>
+        <span class="invalid-feedback" *ngIf="fControl.email.errors && fControl.email.touched">
+          Please enter a valid email.
+        </span>
+
+        <div class="two fields">
+          <div class="field">
+            <label>Mobile Number *</label>
+            <input formControlName="mobile" (keyup.enter)="(RegistrationForm.valid)" required type="text" name="mobile"
+              placeholder="Mobile Number" [class.is-invalid]="
+                (fControl.mobile.touched || fControl.mobile.dirty) &&
+                fControl.mobile.errors
+              " />
+            <span class="invalid-feedback" *ngIf="fControl.mobile.errors && fControl.mobile.touched">
+              Please enter valid mobile number
+            </span>
+          </div>
+          <div class="field">
+            <label>Role *</label>
+            <select name="role" id="role" class="ui fluid dropdown" [class.is-invalid]="
+                (fControl.role.touched || fControl.role.dirty) &&
+                fControl.role.errors
+              " formControlName="role">
+              <option value="2">Initiator</option>
+              <option value="3">Department HOD</option>
+              <option value="4">CS Team HOD</option>
+              <option value="5">CS Team Member</option>
+            </select>
+            <span class="invalid-feedback" *ngIf="fControl.role.errors && fControl.role.touched">
+              Please select valid role
+            </span>
+          </div>
+        </div>
+        <div class="two fields">
+          <div class="field">
+            <label>Employee Code *</label>
+            <input type="number" name="emp_code" placeholder="Employee Number" formControlName="emp_code"
+              [class.is-invalid]="
+                (fControl.emp_code.touched || fControl.emp_code.dirty) &&
+                fControl.emp_code.errors
+              " />
+            <span class="invalid-feedback" *ngIf="fControl.emp_code.errors && fControl.emp_code.touched">
+              Please enter code with correct format.
+            </span>
+          </div>
+          <div class="field">
+            <label>Department *</label>
+            <select name="department" class="ui fluid dropdown" id="" formControlName="department" [class.is-invalid]="
+                (fControl.department.touched || fControl.department.dirty) &&
+                fControl.department.errors
+              ">
+              <option *ngFor="let dep of departments" [ngValue]="dep.name_of_department">
+                {{ dep.name_of_department}}
+              </option>
+            </select>
+            <span class="invalid-feedback" *ngIf="fControl.department.errors && fControl.department.touched">
+              Please select department.
+            </span>
+          </div>
+        </div>
+        <div *ngIf="showHODField" class="field">
+          <label>Department HOD * </label>
+          <select type="text" name="hod" class="ui fluid dropdown" placeholder="hod name" formControlName="hod"
+            [class.is-invalid]="
+              (fControl.hod.touched || fControl.hod.dirty) &&
+              fControl.hod.errors
+            ">
+            <ng-container *ngIf="hodDetails">
+              <option *ngFor="let hod of hodDetails" [ngValue]="hod.hod_name">
+                {{ hod.hod_name}}
+              </option>
+            </ng-container>
+          </select>
+          <span class="invalid-feedback" *ngIf="fControl.hod.errors && fControl.hod.touched">
+            Please select valid hod name.
+          </span>
+        </div>
+        <div class="btn_wrap">
+          <button class="ui brown basic button" type="button" [routerLink]="'../email-validate'" id="sec_btn"
+            (click)='getFormValidationErrors($event)'>
+            <i class="icon angle left"></i>
+            Back to Login
+          </button>
+          <!-- <button (click)="getFormValidationErrors($event)" class="btn btn-dark">
+            Check validations
+          </button> -->
+          <button (mouseenter)="warnValidation($event)" type="submit" [disabled]="RegistrationForm.invalid"
+            class="ui secondary button action_btn">
+            Register
+            <i class="icon white angle right"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+    <div class="footer_wrap">
+      <h3>Note: Please Register Department HOD first.</h3>
+      <h4>
+        Developed by <span> Innovation Team, Solar Industries Nagpur. </span>
+      </h4>
+      <p>
+        The site is protected by recapchta and Google. Terms of Service and
+        privacy policy apply.
+      </p>
+    </div>
+  </div>
+</div>

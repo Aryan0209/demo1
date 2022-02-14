@@ -1,0 +1,16 @@
+1. Find a way to disable one HOD when another HOD of the same department registers.
+ 
+2. submit button not getting activated when number of parties selected is changed. E.g.: If 3 parties are selected first and then if we change it to 1, the submit button then won't get activated.
+ 
+
+ 
+4. disable button after one click, getting approved and logs are generating for every click (rate limiting/lazy-loading) (For all buttons).
+
+ 
+
+
+ 
+
+ 
+
+ 

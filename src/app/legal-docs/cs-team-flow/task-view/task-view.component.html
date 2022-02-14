@@ -1,0 +1,204 @@
+<div class="container-fluid page">
+  <div class="row top-nav">
+    <app-navbar class="col-lg-12"></app-navbar>
+  </div>
+  <p-progressBar *ngIf="loading" class="customProgress" mode="indeterminate" [style]="{'height': '6px'}">
+  </p-progressBar>
+  <div *ngIf="formInfo && formInfo.id" class="row content dashboard">
+    <tabset class="tabset">
+      <tab heading="Initiator Form Details" id="tab1" style="margin-top: -20px">
+        <div class="col-lg-12 page-header">
+          <nav>
+            <div class="row">
+              <ol class="breadcrumb col-lg-8">
+                <li class="breadcrumb-item">
+                  <a><i class="fa fa-home"></i></a>
+                </li>
+                <li class="breadcrumb-item"><a>Initiator Form Details </a></li>
+              </ol>
+            </div>
+          </nav>
+        </div>
+        <div class="col-lg-12 in-box">
+          <div class="card table-card">
+            <div class="card-header">
+              <div class="form-group row">
+                <div class="col-lg-3 margin-bottom-50">
+                  <p class="p">Requester Name</p>
+
+                  <label class="label-text">{{
+                    formInfo.requester_name
+                    }}</label>
+                </div>
+                <div class="col-lg-3 margin-bottom-50">
+                  <p class="p">ID:</p>
+
+                  <label class="label-text">{{ formInfo.userable_id }}</label>
+                </div>
+                <div class="col-lg-3 margin-bottom-50">
+                  <p class="p">Document Type:</p>
+                  <label class="label-text">{{ formInfo.document_type }}</label>
+                </div>
+                <div class="col-lg-3 margin-bottom-50">
+                  <p class="p">Priority</p>
+                  <label class="label-text">{{ formInfo.priority }}</label>
+                </div>
+                <div class="col-lg-3 margin-bottom-50">
+                  <p class="p">Name of Party 1:</p>
+                  <label class="label-text">{{ formInfo.party_name }}</label>
+                </div>
+                <div *ngFor="let i of other_parties" class="col-lg-3 margin-bottom-50 ">
+                  <p class="p   ">Name of Party {{i[i.length -1]}}:</p>
+                  <label class="label-text">{{ formInfo[i] }}</label>
+                </div>
+                <div class="col-lg-3 margin-bottom-50">
+                  <p class="p">Requested Date:</p>
+                  <label class="label-text">{{ formInfo.request_date | date: 'dd/MM/yyyy' }}</label>
+                </div>
+                <div class="col-lg-3 margin-bottom-50">
+                  <p class="p">Required Days:</p>
+                  <label class="label-text">{{ formInfo.required_days }}</label>
+                </div>
+                <div class="col-lg-3 margin-bottom-50">
+                  <p class="p">Complexity:</p>
+                  <label class="label-text">{{ formInfo.complexity }}</label>
+                </div>
+                <div class="col-lg-3 margin-bottom-50">
+                  <p class="p">Category:</p>
+                  <label class="label-text">{{ formInfo.category }}</label>
+                </div>
+                <div class="col-lg-3 margin-bottom-50 ">
+                  <p class="p">Required Date:</p>
+                  <label class="label-text">{{ formInfo.required_date | date: 'dd/MM/yyyy' }}</label>
+                </div>
+                <div class="col-lg-3 margin-bottom-50">
+                  <p class="p">Document Start Date:</p>
+                  <label class="label-text">{{
+                    formInfo.document_start_date | date: 'dd/MM/yyyy'
+                    }}</label>
+                </div>
+                <div class="col-lg-3 margin-bottom-50">
+                  <p class="p"><span>Document End Date:</span></p>
+                  <label class="label-text">{{
+                    formInfo.document_end_date | date: 'dd/MM/yyyy'
+                    }}</label>
+                </div>
+                <div class="col-lg-3 margin-bottom-50">
+                  <p class="p"><span>Authorised By:</span></p>
+                  <label class="label-text">{{ formInfo.authorized_by }}</label>
+                </div>
+
+                <div class="col-lg-3 margin-bottom-50">
+                  <p class="p">If recurring:</p>
+                  <label class="label-text">{{ formInfo.if_recurring }}</label>
+                </div>
+                <div *ngIf="formInfo.if_recurring === 'yes'" class="col-lg-3 margin-bottom-50 ">
+                  <p class="p   ">Agreement date:</p>
+                  <label class="label-text">{{ formInfo.agreement_date | date : 'dd/MM/yyyy' }}</label>
+                </div>
+                <div class="col-lg-3 margin-bottom-50">
+                  <p class="p">Attachment: <i>({{calcNumberOfAssets("legaldocs_dept") +
+                      calcNumberOfAssets("legaldocs")}}) </i> </p>
+                  <button style="height: 40px" (click)="onOpen(1)" class="btn btn-submit">
+                    Open
+                  </button>
+                </div>
+                <!-- <div *ngIf="f_state === 22" class="col-lg-3 margin-bottom-50">
+                  <p class="p">Reconsider Attachments: <i>({{calcNumberOfAssets("legaldocs_Optional_doc")}}) </i> </p>
+                  <button style="height: 40px" (click)="onOpen(4)" class="btn btn-submit">
+                    Open
+                  </button>
+                </div> -->
+                <div *ngIf="userRole === 'cs_member' && (f_state === 3 || f_state === 22 || f_state === 23 )"
+                  class="col-lg-3 margin-bottom-50 font-weight-bold ">
+                  <p class="p cs"> Attach Drafts <sup>*</sup> <i>({{this.files.length}}) </i> </p>
+                  <!-- <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="customFile" name="attached_doc" [multiple]="true"
+                      [required]="true" #fileInput multiple (change)="upload($event)" />
+                    <label class="custom-file-label" for="customFile">
+                      <i class="fa fa-cloud-upload"></i>
+                      <span *ngIf="!files"> Select files</span>
+                      <ng-template [ngIf]="files.length">
+                        <span *ngFor="let fi of files"> | {{fi}} </span>
+                      </ng-template>
+                    </label>
+                    <div class="invalid-feedback">
+                      Please upload a valid file.
+                    </div>
+                  </div> -->
+                  <!-- <button type="menu" class="btn-submit uploadbtn" (click)='toggleUpload($event)'>Attach
+                    new</button> -->
+                  <div class="custom-file">
+                    <input type="button" (click)='toggleUpload($event)' class="custom-file-input" />
+                    <label class="custom-file-label" for="customFile">
+                      <i class="fa fa-cloud-upload"></i>
+                      <span *ngIf="!files" (click)="toggleUpload($event)"> Select files</span>
+                    </label>
+                  </div>
+
+                </div>
+
+                <div *ngIf="f_state === 3 || f_state === 22" class="col-lg-3 margin-bottom-50 font-weight-bold ">
+                  <p class="p"> Your remarks <sup>*</sup></p>
+                  <textarea [(ngModel)]="remarks" class="form-control" id="hod2_remark" rows="1"></textarea>
+                </div>
+                <!-- <div *ngIf="f_state === 22 || f_state === 11 || f_state === 12 "
+                  class="col-lg-3 margin-bottom-50 font-weight-bold ">
+                  <p class="p"> Previously attached Drafts <i>({{calcNumberOfAssets("legaldocs_drafts")}}) </i>
+                    <sup>*</sup>
+                  </p>
+                  <button style="height: 40px" (click)="onOpen(2)" class="btn btn-submit">
+                    Open
+                  </button>
+                </div> -->
+                <div *ngIf="f_state === 14 " class="col-lg-5 margin-bottom-50 font-weight-bold ">
+                  <p class="p"> Attached Closure Doc <i>({{calcNumberOfAssets("legaldocs_signed_copy")}}) </i>
+                    <sup>*</sup>
+                  </p>
+                  <button style="height: 40px" (click)="onOpen(3)" class="btn btn-submit">
+                    Open
+                  </button>
+                </div>
+              </div>
+              <div class="col-lg-12 in-box m-3" id="tableWrap" style="padding-left: 0; margin-right: 0; "
+                *ngIf="userRole === 'initiator' || userRole === 'cs_member'">
+                <app-cs-table *ngIf="remarkLog" [initialFormData]="formInfo" [remarkLogs]="remarkLog" [role]='userRole'
+                  [fState]="f_state">
+                </app-cs-table>
+                <!-- <app-table-ld *ngIf="remarkLog" [initialFormData]="formInfo" [remarkLogs]="remarkLog" [role]='userRole'
+                  [fState]='f_state'>
+                </app-table-ld> -->
+              </div>
+              <div style="margin-bottom: 20px" class="text-right mt-4">
+                <button style="width: 150px" type="button" class="btn mx-2  btn-submit" [routerLink]="['/history']">
+                  Go Back
+                </button>
+                <button *ngIf="f_state === 3 || f_state === 22 || f_state === 23" class="btn mx-2  btn-submit"
+                  [disabled]="submitProcess || !files.length " style="width: max-content;" (click)="onSubmit()">
+                  Submit Drafts
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </tab>
+    </tabset>
+    <p-dialog header="Upload Draft" [(visible)]="showUploadModal" [style]="{width: '50vw'}">
+      <p-fileUpload name="attachments[]" [showUploadButton]='true' [showCancelButton]='true' [files]="files"
+        customUpload="true" (onSelect)='selectFiles($event)' (onRemove)='removeFile($event)' multiple="true"
+        (onProgress)="close($event)" maxFileSize="20000000" (uploadHandler)="close($event,1)">
+      </p-fileUpload>
+    </p-dialog>
+    <p-dialog header="Attachments" [(visible)]="showFileModal" [style]="{width: '50vw'}">
+      <div class="files-container">
+        <div class='file-box' *ngFor="let file of filesToShow" (click)='open(file)'>
+          <i [ngClass]="getFileData(file).icon" style="color:#ff8800;" aria-hidden="true"></i>
+          <span class="badge badge-pill badge-primary filename ">{{getFileData(file).name.substring(0,25)}}
+          </span>
+        </div>
+      </div>
+      <!-- <button style="height: 40px" (click)="onOpen('legaldocs_dept')" class="btn btn-submit">Open doc
+      </button> -->
+    </p-dialog>
+  </div>
+</div>

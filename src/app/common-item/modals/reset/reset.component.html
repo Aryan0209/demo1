@@ -1,0 +1,71 @@
+<div class="modal-header">
+    <h4 class="modal-title">Reset Your Password</h4>
+</div>
+<div class="container-fluid page">
+    <form [class.was-validated]="f.invalid && isSubmitted" #f="ngForm"
+        method="post" enctype='multipart/form-data'>
+        <div class="col-lg-12">
+            <div class="modal-body">
+                <div class="row comparison-screen">
+                    <div class="col-lg-12">
+                        <div class="jumbotron">
+                            <div class="row header">
+                                <div class="col-lg-12">
+                                    <div class="input-group">
+                                        <p class="col-lg-12"><span>Current Password <span class="mandatory">*</span>:</span></p>
+                                        <input class="form-control" type="{{currentPass ? 'text' : 'password'}}" name="currentpassword" [(ngModel)]="ResetPassword.currentpassword" required
+                                            #currentpassword="ngModel" [class.is-invalid]="(currentpassword.dirty || currentpassword.touched) && currentpassword.invalid"
+                                            placeholder="Enter Current Password" aria-describedby="basic-addon">
+                                        <span class="input-group-text" id="basic-addon" >
+                                            <input [(ngModel)]="currentPass" type="checkbox" name="currentPass" class="check"> {{ currentPass ? 'Hide Passsword' : 'Show Password'}}
+                                        </span>
+                                        <div class="invalid-feedback">
+                                            Please enter valid password.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <p> <span>Password Must Contain<span class="mandatory">*</span>:</span></p>
+                                    <p> <span>&#183;  At least 1 Uppercase</span><span style="padding-left:50px;"> &#183;  At least 1 Lowercase</span><span style="padding-left:50px;"> &#183;  At least 1 Number</span></p>
+                                    <p> <span> &#183;  Min 8 chars and Max 12 chars</span><span style="padding-left:50px;">&#183;  At least 1 Symbol</span></p>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="input-group">
+                                        <p class="col-lg-12"><span>New Password :</span></p>
+                                        <input class="form-control" type="{{newPass ? 'text' : 'password'}}" name="newpassword" [(ngModel)]="ResetPassword.newpassword" required
+                                        pattern ="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,12}$"
+                                        #newpassword="ngModel" [class.is-invalid]="(newpassword.dirty || newpassword.touched) && newpassword.invalid"
+                                        placeholder="Enter New Password" aria-describedby="basic-addon">
+                                        <span class="input-group-text" id="basic-addon">
+                                            <input [(ngModel)]="newPass" type="checkbox" name="currentPass" class="check"> {{ newPass ? 'Hide Passsword' : 'Show Password'}}
+                                        </span>
+                                        <div class="invalid-feedback">
+                                        Please enter valid password.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <p><span>Confirm Password<span class="mandatory">*</span>:</span></p>
+                                    <input class="form-control" type="password" name="confirmpassword" [(ngModel)]="ResetPassword.confirmpassword" required 
+                                        pattern ="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,12}$" (change)="checkPassword()"  placeholder="Reenter New Password"
+                                        #confirmpassword="ngModel" [class.is-invalid]="(confirmpassword.dirty || confirmpassword.touched) && confirmpassword.invalid">
+                                    <div class="invalid-feedback">
+                                       Please enter valid password.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>    
+            <div class="modal-footer">
+                <button type="button" class="btn btn-submit" (click)="cancel()" *ngIf = "!isWorking"><span>Cancel</span></button>
+                <button type="button" class="btn btn-submit" (click)="!isWorking && ChangePassword(f)" [disabled]="f.invalid"> 
+                    <span *ngIf = "!isWorking">Reset</span>
+                    <span *ngIf = "isWorking" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span *ngIf = "isWorking">&nbsp; Reseting...</span>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

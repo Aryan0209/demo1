@@ -1,0 +1,7 @@
+<div class="container-fluid" [class.push-in]="!menuToggle" [class.view-layout]="currentUser_legal.success">
+    <div class="row">
+        <app-sidebar *ngIf="showSidebar" class="side-bar" [class.only-icon]="!menuToggle"
+            (toggleEvent)='menuToggle = $event'></app-sidebar>
+        <router-outlet></router-outlet>
+    </div>
+</div>

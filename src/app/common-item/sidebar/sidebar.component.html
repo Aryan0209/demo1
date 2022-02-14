@@ -1,0 +1,51 @@
+<ul class="nav flex-column">
+  <li class="nav-item">
+    <a class="nav-link thumb" (click)="toggleMenu()">
+      <i class="fa fa-bars"></i>
+    </a>
+    <a class="nav-link brand">
+      <img src="assets/images/logo.png" />
+      <span>Solar Industries India Limited</span>
+    </a>
+  </li>
+
+  <li class="nav-item" [routerLinkActive]="['active']">
+    <a class="nav-link" (click)="removeLSt()">
+      <i class="fa fa-wpforms"></i>
+      <span>Dashboard</span>
+    </a>
+  </li>
+  <li class="nav-item" [routerLinkActive]="['active']" *ngIf="t_access_legal('initiator')">
+    <a class="nav-link" (click)="removeLSt()" [routerLink]="['/legal-docs/init/form']">
+      <i class="fa fa-wpforms"></i>
+      <span>Initiator Form</span>
+    </a>
+  </li>
+
+  <li class="nav-item" [routerLinkActive]="['active']" *ngIf="!t_access_legal('cs_member')">
+    <a class="nav-link" (click)="removeLSt()" [routerLink]="['/history']">
+      <i class=" fa fa-history"></i>
+      <span>History</span>
+    </a>
+  </li>
+
+  <li class="nav-item" [routerLinkActive]="['active']" *ngIf="t_access_legal('cs_member')">
+    <a class="nav-link" (click)="removeLSt()" [routerLink]="['/history']">
+      <i class="fa fa-history"></i>
+      <span>To-do's</span>
+    </a>
+  </li>
+  <li class="nav-item collapse-btn">
+    <a class="nav-link" (click)="toggleMenu()">
+      <i class="fa fa-arrow" [class.fa-angle-double-left]="toggle" [class.fa-angle-double-right]="!toggle"></i>
+      <span>Collapse</span>
+    </a>
+  </li>
+  <!-- dont delete bellow li -->
+  <li class="nav-item collapse-btn ">
+    <a class="nav-link " (click)="toggleMenu() ">
+      <i class="fa" [class.fa-angle-double-left]="toggle" [class.fa-angle-double-right]="!toggle"></i>
+      <span>Collapse</span>
+    </a>
+  </li>
+</ul>

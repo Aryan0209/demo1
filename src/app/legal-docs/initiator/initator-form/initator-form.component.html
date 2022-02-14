@@ -1,0 +1,399 @@
+<div *ngIf="reload" class="loader">
+  <div class="d-flex justify-content-center" style="width: 95vw;">
+    <p-progressSpinner [style]="{width: '40px', height: '40px', marginTop: '16px'}" styleClass="custom-spinner"
+      strokeWidth="6" fill="var(--surface-ground)" animationDuration=".5s"></p-progressSpinner>
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+<div *ngIf="!reload" class="container-fluid page">
+  <div class="row top-nav">
+    <app-navbar class="col-lg-12"></app-navbar>
+  </div>
+  <div *ngIf="!reload" class="row content dashboard">
+    <tabset class="tabset">
+      <tab heading="Initator Form" id="tab1" style="margin-top: -20px">
+        <div class="col-lg-12 page-header">
+          <nav>
+            <div class="row">
+              <ol class="breadcrumb col-lg-8">
+                <li class="breadcrumb-item">
+                  <a><i class="fa fa-home"></i></a>
+                </li>
+                <li class="breadcrumb-item"><a>Initiator Form </a></li>
+              </ol>
+            </div>
+          </nav>
+        </div>
+
+        <div class="col-lg-12 in-box">
+          <div class="card table-card">
+            <div class="card-header">
+              <form method="post" enctype="multipart/form-data" [formGroup]="InitiatorForm" (ngSubmit)="onSubmit()">
+                <div class="row comparison-screen">
+                  <div class="col-lg-12">
+                    <div class="row header">
+
+                      <!-- <div class="col-lg-4 field-pad">
+                        <p><span>Number of Parties :</span></p>
+                        <input type="number" class="form-control" [(ngModel)]="numOfParties"
+                          [ngModelOptions]="{standalone: true}" min="1" max="4" value="1">
+                      </div> -->
+                      <div class="col-lg-2 field-pad">
+                        <p>
+                          <span>No of Parties<span class="mandatory">*</span>
+                            :</span>
+                        </p>
+                        <select type="number" class="form-control" class="form-control" [(ngModel)]="numOfParties"
+                          (ngModelChange)="counter()" [ngModelOptions]="{standalone: true}">
+                          <option [ngValue]="null">---Please Select---</option>
+                          <option [ngValue]="1">1</option>
+                          <option [ngValue]="2">2</option>
+                          <option [ngValue]="3">3</option>
+                          <option [ngValue]="4">4</option>
+
+                          <!-- <option value="Other"> Other </option> -->
+
+                        </select>
+                        <div class="invalid-feedback">
+                          Please select a valid option.
+                        </div>
+                      </div>
+
+
+                      <div class="col-lg-2 field-pad">
+                        <p>
+                          <span>Name of Party 1<span class="mandatory">*</span>
+                            :</span>
+                        </p>
+                        <select type="text" class="form-control" name="party_name" id="party_name" required
+                          (change)="handlePartyNamChange($event)" formControlName="party_name" [class.is-invalid]=" 
+                            (f.party_name.touched || f.party_name.dirty) &&
+                            f.party_name.errors
+                          ">
+                          <option [ngValue]="null">---Please Select---</option>
+                          <option *ngFor="let party of party_names" value="{{party.name_of_party}}">
+                            {{party.name_of_party}}
+                          </option>
+                          <option value="Other"> Other </option>
+                        </select>
+                        <div class="invalid-feedback">
+                          Please enter valid name.
+                        </div>
+                      </div>
+
+                      <div *ngFor="let i of ret" class="col-lg-2 field-pad">
+                        <p>
+                          <span>Name of Party {{i+1}} <span class="mandatory">*</span>
+                            :</span>
+                        </p>
+                        <input type="text" class="form-control" name="other_party{{i+1}}" id="other_party{{i+1}}"
+                          formControlName="other_party{{i+1}}" [class.is-invalid]=" 
+                            (f.party_name.touched || f.party_name.dirty) &&
+                            f.party_name.errors
+                          ">
+                        <div class="invalid-feedback">
+                          Please enter valid name.
+                        </div>
+                      </div>
+
+                      <div class="w-100">
+                        <hr>
+                      </div>
+                      <!-- /// -->
+                      <div class="col-lg-4 field-pad">
+                        <p>
+                          <span>Name of Requester<span class="mandatory">*</span>
+                            :</span>
+                        </p>
+                        <input class="form-control" type="text" name="requester_name" id="requester_name" required
+                          readonly formControlName="requester_name" placeholder="Enter the name of Requester"
+                          [class.is-invalid]="
+                            (f.requester_name.touched ||
+                              f.requester_name.dirty) &&
+                            f.requester_name.errors
+                          " />
+                        <div class="invalid-feedback">
+                          Please enter a valid name.
+                        </div>
+                      </div>
+                      <div class="col-lg-4 field-pad">
+                        <p>
+                          <span>Authorised By<span class="mandatory">*</span>
+                            :</span>
+                        </p>
+                        <input type="text" name="authorized_by" class="form-control" id="authorized_by"
+                          title="Authorized by" placeholder=" HOD name" formControlName="authorized_by" readonly
+                          [class.is-invalid]="
+                        (f.authorized_by.touched ||
+                        f.authorized_by.dirty) &&
+                        f.authorized_by.errors
+                        ">
+                      </div>
+                      <div class="col-lg-4 field-pad">
+                        <p>
+                          <span>Requested Date<span class="mandatory">*</span>
+                            :</span>
+                        </p>
+                        <input type="date" name="request_date" class="form-control" required readonly
+                          [ngModel]="today | date:'yyyy-MM-dd'" formControlName="request_date" [class.is-invalid]="
+                            (f.request_date.touched || f.request_date.dirty) &&
+                            f.request_date.errors
+                          " />
+                      </div>
+                      <div class="col-lg-4 field-pad">
+                        <p>
+                          <span>Document Type<span class="mandatory">*</span>
+                            :</span>
+                        </p>
+                        <select type="text" class="form-control" name="document_type" required
+                          formControlName="document_type" (change)="setRequiredDays($event)" [class.is-invalid]="
+                            (f.document_type.touched ||
+                              f.document_type.dirty) &&
+                            f.document_type.errors
+                          ">
+                          <option [ngValue]="null">---Please Select---</option>
+                          <option *ngFor="let type of document_types" value="{{type.name}}"> {{type.name}} </option>
+                          <option value="Other"> Other </option>
+
+                        </select>
+                        <div class="invalid-feedback">
+                          Please select a valid option.
+                        </div>
+                      </div>
+
+
+                      <div class="col-lg-4 field-pad">
+                        <p>
+                          <span>Required days by CS Team <span class="mandatory">*</span>
+                            :</span>
+                        </p>
+                        <input type="text" name="required_days" class="form-control" id="required_days" readonly
+                          formControlName="required_days" required [class.is-invalid]=" 
+                            (f.required_days.touched ||
+                              f.required_days.dirty) &&
+                            f.required_days.errors " />
+                      </div>
+                      <!-- <div class="w-100">
+                        <hr>
+                      </div> -->
+
+                      <div class="col-lg-4 field-pad">
+                        <p>
+                          <span>Category<span class="mandatory">*</span> :</span>
+                        </p>
+                        <select type="text" class="form-control" name="category" id="category" required
+                          formControlName="category" [class.is-invalid]="
+                            (f.category.touched || f.category.dirty) &&
+                            f.category.errors
+                          ">
+
+                          <option [ngValue]="null">---Please Select---</option>
+                          <option value="Indian">
+                            Indian
+                          </option>
+                          <option value="International">
+                            International
+                          </option>
+                        </select>
+                        <div class="invalid-feedback">
+                          Please select a valid option.
+                        </div>
+                      </div>
+                      <div class="col-lg-4 field-pad">
+                        <p>
+                          <span>Complexity<span class="mandatory">*</span> :</span>
+                        </p>
+                        <select type="text" class="form-control" name="complexity" id="complexity" required
+                          formControlName="complexity" [class.is-invalid]=" 
+                            (f.complexity.touched || f.complexity.dirty) &&
+                            f.complexity.errors
+                         ">
+                          <option [ngValue]="null">---Please Select---</option>
+                          <option value="High">High</option>
+                          <option value="Low">Low</option>
+                          <option value="Medium">Medium</option>
+                        </select>
+                      </div>
+
+
+                      <div class="col-lg-4 field-pad">
+                        <p>
+                          <span>Priority<span class="mandatory">*</span> :</span>
+                        </p>
+                        <select type="text" class="form-control" name="priority" id="priority" required
+                          formControlName="priority" [class.is-invalid]="
+                            (f.priority.touched || f.priority.dirty) &&
+                            f.priority.errors
+                          ">
+                          <option [ngValue]="null">---Please Select---</option>
+                          <option value="High">High</option>
+                          <option value="Low">Low</option>
+                          <option value="Medium">Medium</option>
+                        </select>
+                      </div>
+                      <!-- <div class="w-100">
+                        <hr>
+                      </div> -->
+                      <div class="col-lg-4 field-pad">
+                        <p>
+                          <span>Required date<span class="mandatory">*</span>
+                            :</span>
+                        </p>
+                        <input type="date" name="required_date" class="form-control" required
+                          formControlName="required_date" [class.is-invalid]="
+                            (f.required_date.touched ||
+                              f.required_date.dirty) &&
+                            f.required_date.errors
+                          " />
+                      </div>
+                      <div class="col-lg-4 field-pad">
+                        <p>
+                          <span>Document start date<span class="mandatory">*</span>
+                            :</span>
+                        </p>
+                        <input type="date" name="document_start_date" class="form-control" required
+                          formControlName="document_start_date" [class.is-invalid]="
+                            (f.document_start_date.touched ||
+                              f.document_start_date.dirty) &&
+                            f.document_start_date.errors
+                          " />
+                      </div>
+                      <div class="col-lg-4 field-pad">
+                        <p>
+                          <span>Document End date
+                            <span class="mandatory">*</span> :</span>
+                        </p>
+                        <input type="date" name="document_end_date" class="form-control" required
+                          formControlName="document_end_date" [class.is-invalid]="
+                            (f.document_end_date.touched ||
+                              f.document_end_date.dirty) &&
+                            f.document_end_date.errors
+                          " />
+                      </div>
+
+                      <div class="col-lg-4 center">
+                        <p><span>Remarks :</span></p>
+                        <textarea class="form-control" name="remark" formControlName="remark" [class.is-invalid]="
+                            (f.remark.touched || f.remark.dirty) &&
+                            f.remark.errors
+                          ">
+                        </textarea>
+                      </div>
+                      <div class="col-lg-4">
+                        <p>
+                          <span>File Upload<span class="mandatory">*</span><i>({{this.files.length}}) </i> </span>
+                        </p>
+                        <div class="custom-file">
+                          <input type="button" (click)='toggleUpload($event)' class="custom-file-input" />
+                          <label class="custom-file-label" for="customFile">
+                            <i class="fa fa-cloud-upload"></i>
+                            <span *ngIf="!files" (click)="toggleUpload($event)"> Select files</span>
+
+                          </label>
+                        </div>
+                        <!-- <button type="menu" class="btn-submit uploadbtn" (click)='toggleUpload($event)'>Attach
+                          new</button> -->
+
+                        <!-- primeng upload -->
+
+
+                        <!-- initial files -->
+                        <div *ngIf="initialFormData && initialFormData.assets" class="btn-group" role="group"
+                          aria-label="...">
+                          <br>
+                          <p class="mt-1">Previous files: </p>
+                          <!-- initialFormData.assets -->
+                          <a *ngFor="let file of initialFormData.assets; let i=index" href="{{file.value}}"
+                            target="_blank" class=" btn btn-link">File {{i+1}}</a>
+                        </div>
+                        <!-- </div> -->
+                        <div class="invalid-feedback">
+                          Please upload a valid file.
+                        </div>
+                      </div>
+
+                      <div class="col-lg-4 field-pad">
+                        <p>
+                          <span>Recurring date ?<span class="mandatory">*</span>
+                            :</span>
+                        </p>
+                        <div class="form-check form-check-inline col-lg-2  ">
+                          <input class="form-check-input" type="radio" name="if_recurring" id="yes"
+                            formControlName="if_recurring" value="yes" />
+                          <label class="form-check-label" for="yes">Yes</label>
+                        </div>
+                        <div class="form-check form-check-inline col-lg-2">
+                          <input class="form-check-input" type="radio" name="if_recurring" id="no" value="no"
+                            formControlName="if_recurring" />
+                          <label class="form-check-label" for="no">No</label>
+                        </div>
+                      </div>
+                      <div class="col-lg-4 field-pad" *ngIf=" this.InitiatorForm.get('if_recurring').value === 'yes'">
+                        <p>
+                          <span>Agreement Date
+                            <span class="mandatory">*</span> :</span>
+                        </p>
+                        <input type="date" name="agreement_date" class="form-control" required
+                          formControlName="agreement_date" [class.is-invalid]="
+                            (f.agreement_date.touched ||
+                              f.agreement_date.dirty) &&
+                            f.agreement_date.errors
+                          " />
+                      </div>
+
+                      <div class="col-lg-12 text-right" style="padding-top: 20px">
+
+                        <div (contextmenu)="getFormValidationErrors($event)">
+                          <button type="submit" class="btn btn-submit"
+                            [disabled]="InitiatorForm.invalid || submit_process || (!initialFormData && !files.length) ">
+                            <span>Submit </span>
+                            <span *ngIf="submit_process" class="spinner-border spinner-border-sm" role="status"
+                              aria-hidden="true"></span>
+                            <!-- <span>&nbsp; Submitting...</span> -->
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </tab>
+    </tabset>
+    <p-dialog header="Add new {{mode === 2 ? 'Party' : 'Document Type'}}" [(visible)]="showAddDialog"
+      (onHide)="cancelWithoutEntries()" [style]="{width: '480px'}">
+      <form (ngSubmit)="addNewEntries()">
+        <div class="form-group">
+          <label for="docOrPartyName">New {{mode == 2 ? "Party name" : "Document type" }}</label>
+          <input [(ngModel)]="newNameModel" type="text" class="form-control" id="docOrPartyName" name="newNameModel"
+            aria-describedby="newHelp" placeholder="Enter new {{mode ===2 ? 'name' : 'type'  }}">
+          <small id="newHelp" class="form-text text-muted">This will add new entry to our database.</small>
+        </div>
+        <div *ngIf="mode !== 2" class="form-row">
+          <div class="form-group col-md-6">
+            <label for="minDaysReq">Min</label>
+            <input type="number" [(ngModel)]="newTypeMinDays" class="form-control" id="minDaysReq" min=1 max=60
+              name="newTypeMinDays" placeholder="Min">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="maxDaysReq">Max</label>
+            <input type="number" [(ngModel)]="newTypeMaxDays" class="form-control" [min]=[(newTypeMinDays)] max=60
+              name="newTypeMaxDays" id="maxDaysReq" placeholder="Max">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-submit">Submit</button>
+      </form>
+    </p-dialog>
+    <p-dialog header="Upload files" [(visible)]="showUploadModal" [style]="{width: '60vw'}">
+      <p-fileUpload name="attachments[]" [showUploadButton]='true' [showCancelButton]='true' [files]="files"
+        (onClear)="clear()" customUpload="true" (onSelect)='selectFiles($event)' (onRemove)='removeFile($event)'
+        multiple="true" (onProgress)="close($event)" maxFileSize="20000000" (uploadHandler)="close($event,1)">
+      </p-fileUpload>
+    </p-dialog>
+  </div>
+</div>
+
+<!-- hell world -->

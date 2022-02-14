@@ -1,0 +1,39 @@
+<div class="container-fluid login-page ">
+    <div class="col-lg-5 offset-lg-3 box _h">
+        <div class="col-lg-12 head text-center">
+            <img src="assets/images/logo.png" />
+            <h3 class="text-uppercase"> Legal Documents Module </h3>
+            <h1>Sign In</h1>
+            <p>Enter your credentials below to proceed login!</p>
+        </div>
+        <form class="row was-validated mt-2 " [formGroup]="EmailForm"
+            [class.was-validated]="EmailForm.invalid && EmailForm.touched">
+            <div class="input-group form-group col-lg-12 m-4  ">
+                <div class="input-group">
+                    <div class="input-group-prepend-new">
+                        <span class="input-group-text" id="basic-addon1"><i class="fa fa-user"></i></span>
+                    </div>
+                    <input type="email" class="form-control form-control-lg " name="email" placeholder="Enter Email"
+                        autocomplete="off" formControlName="email" (keyup.enter)="EmailForm.valid" autofocus required>
+                </div>
+            </div>
+            <button class="btn btn-outline-dark m-auto px-3 " type="button" [routerLink]="'../register'"
+                href="#/legal-docs/auth/register"> SIGN UP </button>
+            <button type="button" class="btn btn-outline-dark m-auto px-3" (click)="!Isworking && onSubmit()">
+                <span *ngIf="!Isworking">Get OTP</span>
+                <span *ngIf="Isworking" class="spinner-border spinner-border-sm" role="status"
+                    aria-hidden="true"></span>
+                <span *ngIf="Isworking">&nbsp; Email Sending...</span>
+            </button>
+        </form>
+
+        <div class="input-group">
+            <div style="margin-top: 40px;" class="col-lg-12">
+                <p class="credit" style="padding-left: 50px;"><br>Developed By © <span>DART, <br> Solar
+                        Industries
+                        India Ltd, Nagpur.</span></p>
+            </div>
+        </div>
+    </div>
+    <router-outlet></router-outlet>
+</div>

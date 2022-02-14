@@ -1,0 +1,664 @@
+<div class="container-fluid page">
+  <div class="row top-nav">
+    <app-navbar class="col-lg-12"></app-navbar>
+  </div>
+  <!-- <div class="btn btn-info" (click)="print()"> Test </div> -->
+  <div style="height: 8px;">
+    <p-progressBar *ngIf="loading" class="customProgress " mode="indeterminate" [style]="{'height': '6px' }">
+    </p-progressBar>
+  </div>
+
+  <div class="row content dashboard">
+    <tabset class="tabset">
+      <tab>
+        <ng-template tabHeading>
+          <span>{{this.User.role === 'initiator' ? 'In Progress' : 'To Do' }}</span>
+          <p-badge [value]="results.inp.length > 0 ? results.inp.length : '~'"></p-badge>
+        </ng-template>
+        <div class="col-lg-12 page-header margin-top" id="pg-header">
+          <nav>
+            <div class="row">
+              <ol class="breadcrumb col-lg-8">
+                <li class="breadcrumb-item">
+                  <a><i class="fa fa-home"></i></a>
+                </li>
+                <li class="breadcrumb-item"><a>In-progress</a></li>
+                <li class="breadcrumb-item active"><a>list</a></li>
+              </ol>
+            </div>
+          </nav>
+        </div>
+        <div class="col-lg-12 in-box">
+          <div class="card table-card">
+            <div class="data-table">
+
+
+              <p-table #dt1 [value]="results.inp" styleClass="p-datatable-striped history_table" [scrollable]="false"
+                scrollHeight="100" scrollWidth="100%" sortMode="multiple" [rows]="15" [showCurrentPageReport]="true"
+                responsiveLayout="scroll"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" autoLayout='true'
+                [rowsPerPageOptions]="[10,25,50]" [multiSortMeta]="[ {field: 'updated_at', order: -1}]"
+                [globalFilterFields]="['id', 'created_at', 'updated_at','initiator_name']">
+
+                <ng-template pTemplate="caption">
+                  <div class="p-d-flex options ">
+                    <button pButton label="Clear" class="p-button-outlined p-button-sm" icon="pi pi-filter-slash"
+                      (click)="clear(dt1)"></button>
+                    <span class="p-input-icon-left p-ml-auto">
+                      <i class="pi pi-search"></i>
+                      <input class="psearchfield" pInputText type="text"
+                        (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                        placeholder="Search by name, time, or ID" />
+                    </span>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Action</th>
+                    <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon>
+                    </th>
+                    <th>Initiator Name
+                      <p-columnFilter type="text" field="initiator_name" display="menu"></p-columnFilter>
+                    </th>
+                    <th pSortableColumn="created_at">Created At <p-sortIcon field="created_at">
+                      </p-sortIcon>
+                    </th>
+                    <th>Status
+                      <p-columnFilter [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"
+                        field="state" matchMode="equals" display="menu">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                          <p-dropdown [ngModel]="value" [options]="statuses" (onChange)="filter($event.value)"
+                            placeholder="Any">
+                            <ng-template let-option pTemplate="item">
+                              <span>{{option.label}}</span>
+                            </ng-template>
+                          </p-dropdown>
+                        </ng-template>
+                      </p-columnFilter>
+                    </th>
+                    <th pSortableColumn="updated_at">Updated At <p-sortIcon field="updated_at">
+                      </p-sortIcon>
+                    </th>
+                    <th>Logs</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-data>
+                  <tr>
+                    <td>
+                      <button (click)="onClick(data.id, data.state)" type="button" class="btn btn-submit tb-btn ">
+                        View
+                      </button>
+                    </td>
+                    <td>{{ data.id }}</td>
+                    <td>{{ data.initiator_name }}</td>
+                    <td>{{ data.created_at | date: "dd/MM/yyyy" }}</td>
+                    <td> <span class="status" [class]="getStatus(data.state)[1]">
+                        {{ getStatus(data.state)[0] }}
+                      </span> </td>
+                    <td>{{ data.updated_at | date: 'd/M/yy, h:mm a' }}</td>
+                    <td>
+                      <button (click)="showDialog(data.id)" type="button" class="btn btn-submit tb-btn ">
+                        Logs
+                      </button>
+                    </td>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="paginatorleft">
+                  <p-button type="button" icon="pi pi-plus" styleClass="p-button-text"></p-button>
+                </ng-template>
+                <ng-template pTemplate="paginatorright">
+                  <p-button type="button" icon="pi pi-cloud" styleClass="p-button-text"></p-button>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </tab>
+      <tab style="margin-top: -20px">
+        <ng-template tabHeading>
+          <div style="width: 100%;" (click)="loadOnVisit('app')" class="container">
+            <span>Approved</span>
+            <p-badge [value]="results.app.length || '~'"></p-badge>
+          </div>
+        </ng-template>
+
+        <div class="col-lg-12 page-header margin-top">
+          <nav>
+            <div class="row">
+              <ol class="breadcrumb col-lg-8">
+                <li class="breadcrumb-item">
+                  <a><i class="fa fa-home"></i></a>
+                </li>
+                <li class="breadcrumb-item"><a>In-progress</a></li>
+                <li class="breadcrumb-item active"><a>list</a></li>
+              </ol>
+            </div>
+          </nav>
+        </div>
+        <div class="col-lg-12 in-box">
+          <div class="card table-card">
+            <div class="data-table">
+
+
+              <p-table #dt2 [value]="results.app" styleClass="p-datatable-striped" [scrollable]="false"
+                autoLayout='true' scrollHeight="100" scrollWidth="100%" sortMode="multiple" [paginator]="true"
+                [rows]="15" [showCurrentPageReport]="true" responsiveLayout="scroll"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [rowsPerPageOptions]="[10,25,50]" [multiSortMeta]="[ {field: 'updated_at', order: -1}]"
+                [autoLayout]="true" [globalFilterFields]="['id', 'created_at', 'updated_at','initiator_name']">
+
+                <ng-template pTemplate="caption">
+                  <div class="p-d-flex options ">
+                    <button pButton label="Clear" class="p-button-outlined p-button-sm" icon="pi pi-filter-slash"
+                      (click)="clear(dt2)"></button>
+                    <span class="p-input-icon-left p-ml-auto">
+                      <i class="pi pi-search"></i>
+                      <input class="psearchfield" pInputText type="text"
+                        (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                        placeholder="Search by name, time, or ID" />
+                    </span>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Action</th>
+                    <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon>
+                    </th>
+                    <th>Initiator Name
+                      <p-columnFilter type="text" field="initiator_name" display="menu"></p-columnFilter>
+                    </th>
+                    <th pSortableColumn="created_at">Created At <p-sortIcon field="created_at">
+                      </p-sortIcon>
+                    </th>
+                    <th>Status
+                      <p-columnFilter [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"
+                        field="state" matchMode="equals" display="menu">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                          <p-dropdown [ngModel]="value" [options]="statuses" (onChange)="filter($event.value)"
+                            placeholder="Any">
+                            <ng-template let-option pTemplate="item">
+                              <span>{{option.label}}</span>
+                            </ng-template>
+                          </p-dropdown>
+                        </ng-template>
+                      </p-columnFilter>
+                    </th>
+                    <th pSortableColumn="updated_at">Updated At <p-sortIcon field="updated_at">
+                      </p-sortIcon>
+                    </th>
+                    <th>Logs</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-data>
+                  <tr>
+                    <td>
+                      <button (click)="onClick(data.id, data.state)" type="button" class="btn btn-submit tb-btn ">
+                        View
+                      </button>
+                    </td>
+                    <td>{{ data.id }}</td>
+                    <td>{{ data.initiator_name }}</td>
+                    <td>{{ data.created_at | date: "dd/MM/yyyy" }}</td>
+                    <td><span class="status" [class]="getStatus(data.state)[1]">
+                        {{ getStatus(data.state)[0] }}
+                      </span></td>
+                    <td>{{ data.updated_at | date: 'd/M/yy, h:mm a' }}</td>
+                    <td>
+                      <button (click)="showDialog(data.id)" type="button" class="btn btn-submit tb-btn ">
+                        Logs
+                      </button>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </tab>
+      <tab id="tab1" style="margin-top: -20px">
+        <ng-template tabHeading>
+          <div style="width: 100%;" class="container" (click)="loadOnVisit('recon')">
+            <span>Reconsider </span>
+            <p-badge [value]="results.recon.length || '~'"></p-badge>
+          </div>
+        </ng-template>
+        <div class="col-lg-12 page-header margin-top">
+          <nav>
+            <div class="row">
+              <ol class="breadcrumb col-lg-8">
+                <li class="breadcrumb-item">
+                  <a><i class="fa fa-home"></i></a>
+                </li>
+                <li class="breadcrumb-item"><a>In-progress</a></li>
+                <li class="breadcrumb-item active"><a>list</a></li>
+              </ol>
+            </div>
+          </nav>
+        </div>
+        <div class="col-lg-12 in-box">
+          <div class="card table-card">
+            <div class="data-table">
+
+
+              <p-table #dt3 [value]="results.recon" styleClass="p-datatable-striped" [scrollable]="false"
+                scrollHeight="100" scrollWidth="100%" sortMode="multiple" [paginator]="true" [rows]="15"
+                [showCurrentPageReport]="true" responsiveLayout="scroll"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [rowsPerPageOptions]="[10,25,50]" [multiSortMeta]="[ {field: 'updated_at', order: -1}]"
+                [autoLayout]="true" [globalFilterFields]="['id', 'created_at', 'updated_at','initiator_name']">
+
+                <ng-template pTemplate="caption">
+                  <div class="p-d-flex options ">
+                    <button pButton label="Clear" class="p-button-outlined p-button-sm" icon="pi pi-filter-slash"
+                      (click)="clear(dt3)"></button>
+                    <span class="p-input-icon-left p-ml-auto">
+                      <i class="pi pi-search"></i>
+                      <input class="psearchfield" pInputText type="text"
+                        (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                        placeholder="Search by name, time, or ID" />
+                    </span>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Action</th>
+                    <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon>
+                    </th>
+                    <th>Initiator Name
+                      <p-columnFilter type="text" field="initiator_name" display="menu"></p-columnFilter>
+                    </th>
+                    <th pSortableColumn="created_at">Created At <p-sortIcon field="created_at">
+                      </p-sortIcon>
+                    </th>
+                    <th>Status
+                      <p-columnFilter [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"
+                        field="state" matchMode="equals" display="menu">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                          <p-dropdown [ngModel]="value" [options]="statuses" (onChange)="filter($event.value)"
+                            placeholder="Any">
+                            <ng-template let-option pTemplate="item">
+                              <span>{{option.label}}</span>
+                            </ng-template>
+                          </p-dropdown>
+                        </ng-template>
+                      </p-columnFilter>
+                    </th>
+                    <th pSortableColumn="updated_at">Updated At <p-sortIcon field="updated_at">
+                      </p-sortIcon>
+                    </th>
+                    <th>Logs</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-data>
+                  <tr>
+                    <td>
+                      <button
+                        (click)="role === 'initiator' && (data.state === 6 || data.state === 4) ? editDoc(data.id, data.state) :  onClick(data.id, data.state)    "
+                        type="button" class="btn btn-submit tb-btn ">
+                        {{role === 'initiator' && (data.state === 6 || data.state === 4) ? 'Edit' : 'View' }}
+                      </button>
+                    </td>
+                    <td>{{ data.id }}</td>
+                    <td>{{ data.initiator_name }}</td>
+                    <td>{{ data.created_at | date: "dd/MM/yyyy" }}</td>
+                    <td><span class="status" [class]="getStatus(data.state)[1]">
+                        {{ getStatus(data.state)[0] }}
+                      </span></td>
+                    <td>{{ data.updated_at | date: 'd/M/yy, h:mm a' }}</td>
+                    <td>
+                      <button (click)="showDialog(data.id)" type="button" class="btn btn-submit tb-btn ">
+                        Logs
+                      </button>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </tab>
+      <tab *ngIf="role === 'cs_member'" id="tab1" style="margin-top: -20px">
+        <ng-template tabHeading>
+          <div style="width: 100%;" class="container" (click)="loadOnVisit('sub')">
+            <span>Submitted</span>
+            <p-badge [value]="results.sub.length || '~'"></p-badge>
+          </div>
+        </ng-template>
+        <div class="col-lg-12 page-header margin-top">
+          <nav>
+            <div class="row">
+              <ol class="breadcrumb col-lg-8">
+                <li class="breadcrumb-item">
+                  <a><i class="fa fa-home"></i></a>
+                </li>
+                <li class="breadcrumb-item"><a>In-progress</a></li>
+                <li class="breadcrumb-item active"><a>list</a></li>
+              </ol>
+            </div>
+          </nav>
+        </div>
+        <div class="col-lg-12 in-box">
+          <div class="card table-card">
+            <div class="data-table">
+
+
+              <p-table #dt6 [value]="results.sub" styleClass="p-datatable-striped" [scrollable]="false"
+                scrollHeight="100" scrollWidth="100%" sortMode="multiple" [paginator]="true" [rows]="15"
+                [showCurrentPageReport]="true" responsiveLayout="scroll"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [rowsPerPageOptions]="[10,25,50]" [multiSortMeta]="[ {field: 'updated_at', order: -1}]"
+                [multiSortMeta]="[ {field: 'updated_at', order: -1}]" [autoLayout]="true"
+                [globalFilterFields]="['id', 'created_at', 'updated_at','initiator_name']">
+
+                <ng-template pTemplate="caption">
+                  <div class="p-d-flex options ">
+                    <button pButton label="Clear" class="p-button-outlined p-button-sm" icon="pi pi-filter-slash"
+                      (click)="clear(dt4)"></button>
+                    <span class="p-input-icon-left p-ml-auto">
+                      <i class="pi pi-search"></i>
+                      <input class="psearchfield" pInputText type="text"
+                        (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                        placeholder="Search by name, time, or ID" />
+                    </span>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Action</th>
+                    <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon>
+                    </th>
+                    <th>Initiator Name
+                      <p-columnFilter type="text" field="initiator_name" display="menu"></p-columnFilter>
+                    </th>
+                    <th pSortableColumn="created_at">Created At <p-sortIcon field="created_at">
+                      </p-sortIcon>
+                    </th>
+                    <th>Status
+                      <p-columnFilter [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"
+                        field="state" matchMode="equals" display="menu">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                          <p-dropdown [ngModel]="value" [options]="statuses" (onChange)="filter($event.value)"
+                            placeholder="Any">
+                            <ng-template let-option pTemplate="item">
+                              <span>{{option.label}}</span>
+                            </ng-template>
+                          </p-dropdown>
+                        </ng-template>
+                      </p-columnFilter>
+                    </th>
+                    <th pSortableColumn="updated_at">Updated At <p-sortIcon field="updated_at">
+                      </p-sortIcon>
+                    </th>
+                    <th>Logs</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-data>
+                  <tr>
+                    <td>
+                      <button (click)="onClick(data.id, data.state)" type="button" class="btn btn-submit tb-btn ">
+                        View
+                      </button>
+                    </td>
+                    <td>{{ data.id }}</td>
+                    <td>{{ data.initiator_name }}</td>
+                    <td>{{ data.created_at | date: "dd/MM/yyyy" }}</td>
+                    <td><span class="status" [class]="getStatus(data.state)[1]">
+                        {{ getStatus(data.state)[0] }}
+                      </span></td>
+                    <td>{{ data.updated_at | date: 'd/M/yy, h:mm a' }}</td>
+                    <td>
+                      <button (click)="showDialog(data.id)" type="button" class="btn btn-submit tb-btn ">
+                        Logs
+                      </button>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </tab>
+      <tab id="tab1" style="margin-top: -20px">
+        <ng-template tabHeading>
+          <div style="width: 100%;" class="container" (click)="loadOnVisit('closure')">
+            <span>Closure</span>
+            <p-badge [value]="results.closure.length || '~'"></p-badge>
+          </div>
+        </ng-template>
+        <div class="col-lg-12 page-header margin-top">
+          <nav>
+            <div class="row">
+              <ol class="breadcrumb col-lg-8">
+                <li class="breadcrumb-item">
+                  <a><i class="fa fa-home"></i></a>
+                </li>
+                <li class="breadcrumb-item"><a>In-progress</a></li>
+                <li class="breadcrumb-item active"><a>list</a></li>
+              </ol>
+            </div>
+          </nav>
+        </div>
+        <div class="col-lg-12 in-box">
+          <div class="card table-card">
+            <div class="data-table">
+
+
+              <p-table #dt4 [value]="results.closure" styleClass="p-datatable-striped" [scrollable]="false"
+                scrollHeight="100" sortMode="multiple" [paginator]="true" [rows]="15" [showCurrentPageReport]="true"
+                responsiveLayout="scroll"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [rowsPerPageOptions]="[10,25,50]" [multiSortMeta]="[ {field: 'updated_at', order: -1}]"
+                [multiSortMeta]="[ {field: 'updated_at', order: -1}]" [autoLayout]="true"
+                [globalFilterFields]="['id', 'created_at', 'updated_at','initiator_name']">
+
+                <ng-template pTemplate="caption">
+                  <div class="p-d-flex options ">
+                    <button pButton label="Clear" class="p-button-outlined p-button-sm" icon="pi pi-filter-slash"
+                      (click)="clear(dt4)"></button>
+                    <span class="p-input-icon-left p-ml-auto">
+                      <i class="pi pi-search"></i>
+                      <input class="psearchfield" pInputText type="text"
+                        (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                        placeholder="Search by name, time, or ID" />
+                    </span>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Action</th>
+                    <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon>
+                    </th>
+                    <th>Initiator Name
+                      <p-columnFilter type="text" field="initiator_name" display="menu"></p-columnFilter>
+                    </th>
+                    <th pSortableColumn="created_at">Created At <p-sortIcon field="created_at">
+                      </p-sortIcon>
+                    </th>
+                    <th>Status
+                      <p-columnFilter [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"
+                        field="state" matchMode="equals" display="menu">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                          <p-dropdown [ngModel]="value" [options]="statuses" (onChange)="filter($event.value)"
+                            placeholder="Any">
+                            <ng-template let-option pTemplate="item">
+                              <span>{{option.label}}</span>
+                            </ng-template>
+                          </p-dropdown>
+                        </ng-template>
+                      </p-columnFilter>
+                    </th>
+                    <th pSortableColumn="updated_at">Updated At <p-sortIcon field="updated_at">
+                      </p-sortIcon>
+                    </th>
+                    <th>Logs</th>
+                    <th *ngIf="User.role === 'initiator'">Renew</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-data>
+                  <tr>
+                    <td>
+                      <button (click)="onClick(data.id, data.state)" type="button" class="btn btn-submit tb-btn ">
+                        View
+                      </button>
+                    </td>
+                    <td>{{ data.id }}</td>
+                    <td>{{ data.initiator_name }}</td>
+                    <td>{{ data.created_at | date: "dd/MM/yyyy" }}</td>
+                    <td><span class="status" [class]="getStatus(data.state)[1]">
+                        {{ getStatus(data.state)[0] }}
+                      </span></td>
+                    <td>{{ data.updated_at | date: 'd/M/yy, h:mm a' }}</td>
+                    <td>
+                      <button (click)="showDialog(data.id)" type="button" class="btn btn-submit tb-btn ">
+                        Logs
+                      </button>
+                    </td>
+                    <td>
+                      <div *ngIf="data.state === 16 && role === 'initiator' ">
+                        <button (click)="editDoc(data.id, data.state, 1)" type="button" class="btn btn-submit tb-btn ">
+                          Renew
+                        </button>
+                      </div>
+
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </tab>
+      <tab id="tab1" style="margin-top: -20px">
+        <ng-template tabHeading>
+          <div style="width: 100%;" class="container" (click)="loadOnVisit('rej')">
+            <span>Rejected</span>
+            <p-badge [value]="results.rej.length || '~'"></p-badge>
+          </div>
+        </ng-template>
+        <div class="col-lg-12 page-header margin-top">
+          <nav>
+            <div class="row">
+              <ol class="breadcrumb col-lg-8">
+                <li class="breadcrumb-item">
+                  <a><i class="fa fa-home"></i></a>
+                </li>
+                <li class="breadcrumb-item"><a>In-progress</a></li>
+                <li class="breadcrumb-item active"><a>list</a></li>
+              </ol>
+            </div>
+          </nav>
+        </div>
+        <div class="col-lg-12 in-box">
+          <div class="card table-card">
+            <div class="data-table">
+              <p-table #dt5 [value]="results.rej" styleClass="p-datatable-striped" [scrollable]="false"
+                scrollHeight="100" scrollWidth="100%" sortMode="multiple" [paginator]="true" [rows]="15"
+                [showCurrentPageReport]="true" responsiveLayout="scroll"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [rowsPerPageOptions]="[10,25,50]" [multiSortMeta]="[ {field: 'updated_at', order: -1}]"
+                [multiSortMeta]="[ {field: 'updated_at', order: -1}]" [autoLayout]="true"
+                [globalFilterFields]="['id', 'created_at', 'updated_at','initiator_name']">
+
+                <ng-template pTemplate="caption">
+                  <div class="p-d-flex options ">
+                    <button pButton label="Clear" class="p-button-outlined p-button-sm" icon="pi pi-filter-slash"
+                      (click)="clear(dt5)"></button>
+                    <span class="p-input-icon-left p-ml-auto">
+                      <i class="pi pi-search"></i>
+                      <input class="psearchfield" pInputText type="text"
+                        (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                        placeholder="Search by name, time, or ID" />
+                    </span>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th>Action</th>
+                    <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon>
+                    </th>
+                    <th>Initiator Name
+                      <p-columnFilter type="text" field="initiator_name" display="menu"></p-columnFilter>
+                    </th>
+                    <th pSortableColumn="created_at">Created At <p-sortIcon field="created_at">
+                      </p-sortIcon>
+                    </th>
+                    <th>Status
+                      <p-columnFilter [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"
+                        field="state" matchMode="equals" display="menu">
+                        <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                          <p-dropdown [ngModel]="value" [options]="statuses" (onChange)="filter($event.value)"
+                            placeholder="Any">
+                            <ng-template let-option pTemplate="item">
+                              <span>{{option.label}}</span>
+                            </ng-template>
+                          </p-dropdown>
+                        </ng-template>
+                      </p-columnFilter>
+                    </th>
+                    <th pSortableColumn="updated_at">Updated At <p-sortIcon field="updated_at">
+                      </p-sortIcon>
+                    </th>
+                    <th>Logs</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-data>
+                  <tr>
+                    <td>
+                      <button (click)="onClick(data.id, data.state)" type="button" class="btn btn-submit tb-btn ">
+                        View
+                      </button>
+                    </td>
+                    <td>{{ data.id }}</td>
+                    <td>{{ data.initiator_name }}</td>
+                    <td>{{ data.created_at | date: "dd/MM/yyyy" }}</td>
+                    <td><span class="status" [class]="getStatus(data.state)[1]">
+                        {{ getStatus(data.state)[0] }}
+                      </span></td>
+                    <td>{{ data.updated_at | date: 'd/M/yy, h:mm a' }}</td>
+                    <td>
+                      <button (click)="showDialog(data.id)" type="button" class="btn btn-submit tb-btn ">
+                        Logs
+                      </button>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+      </tab>
+    </tabset>
+
+    <p-dialog header="Remark Details" (onHide)="closeLogDialog($event)" [(visible)]="display" [style]="{width: '60vw'}">
+      <p-table [value]="logs" styleClass="p-datatable-gridlines mytable " [autoLayout]="true" [scrollable]='false'>
+        <ng-template pTemplate="header">
+          <tr id="headers-row">
+            <th>Sr No</th>
+            <th>Name</th>
+            <th>Remark</th>
+            <th>Status</th>
+            <th>Update At</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-data let-i="rowIndex">
+          <tr>
+            <td> {{i +1 }} </td>
+            <td>{{ data.remark_by}}</td>
+            <td class="rmrk">{{ data.remark }}</td>
+            <td><span class="status ">
+                {{ getStatus(data.state)[0] }}
+              </span></td>
+            <td> {{data.updated_at | date: "dd/MM/yyyy" }} </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-dialog>
+
+  </div>
+</div>
